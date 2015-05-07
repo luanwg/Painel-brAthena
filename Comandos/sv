@@ -28,6 +28,8 @@ case $1 in
 	svn update >> /var/www/html/painel/logs/atualizar.txt &
 	cd /var/www/html/painel
 	svn update >> /var/www/html/painel/logs/atualizar.txt &
+	cd /usr/bin
+	svn update >> /var/www/html/painel/logs/atualizar.txt &
 ;;
     'start')
 	clear

@@ -1,6 +1,10 @@
 #!/bin/bash -p
 case $1 in
 	'instalar')
+	mkdir /var/www/html/phpMyAdmin
+	svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /var/www/html/phpMyAdmin
+	mkdir /home/emulador
+	svn co https://github.com/brAthena/brAthena/trunk /home/emulador
 	yum install -y php php-mysql php-cli php-gd php-mbstring php-mcrypt php-mhash php-pdo php-xmlrpc php-pear
 	pear channel-discover phpseclib.sourceforge.net
 	pear install phpseclib/Net_SSH2
@@ -8,10 +12,7 @@ case $1 in
 	yum install -y mariadb mariadb-server
 	yum install -y gcc gcc-c++ make mysql mysql-server mysql-devel pcre pcre-devel zlib zlib-devel git
 	yum -y update
-	mkdir /var/www/html/phpMyAdmin
-	svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /var/www/html/phpMyAdmin
-	mkdir /home/emulador
-	svn co https://github.com/brAthena/brAthena/trunk /home/emulador
+	cd /home/emulador
 	chmod +x sysinfogen.sh
 	chmod 777 configure
 	systemctl enable httpd.service

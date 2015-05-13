@@ -37,31 +37,30 @@ $ssh = new Net_SSH2($ip);
 if ($ssh->login($login, $senha)) {
 $comando[0] = "mkdir /var/www/html/phpMyAdmin | mkdir /var/www/html/painel | mkdir /home/emulador";
 $comando[1] = "yum install -y subversion";
-$comando[2] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/Comandos /usr/bin";
-$comando[3] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /var/www/html/phpMyAdmin";
-$comando[4] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
-$comando[5] = "svn co https://github.com/brAthena/brAthena/trunk /home/emulador";
-$comando[6] = "yum install -y php php-mysql php-cli php-gd php-mbstring php-mhash php-pdo php-xmlrpc php-pear";
-$comando[7] = "pear channel-discover phpseclib.sourceforge.net";
-$comando[8] = "pear install phpseclib/Net_SSH2";
-$comando[9] = "yum install -y httpd";
-$comando[10] = "yum install -y mariadb mariadb-server";
-$comando[11] = "yum install -y gcc gcc-c++ make mysql mysql-server mysql-devel pcre pcre-devel zlib zlib-devel git";
-$comando[12] = "yum -y update";
-$comando[13] = "chmod 777 /usr/bin/sv | chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure";
-$comando[14] = "systemctl enable httpd.service | systemctl enable mariadb.service";
-$comando[15] = "systemctl start mariadb.service | systemctl start httpd.service";
+$comando[2] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /var/www/html/phpMyAdmin";
+$comando[3] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
+$comando[4] = "svn co https://github.com/brAthena/brAthena/trunk /home/emulador";
+$comando[5] = "yum install -y php php-mysql php-cli php-gd php-mbstring php-mhash php-pdo php-xmlrpc php-pear";
+$comando[6] = "pear channel-discover phpseclib.sourceforge.net";
+$comando[7] = "pear install phpseclib/Net_SSH2";
+$comando[8] = "yum install -y httpd";
+$comando[9] = "yum install -y mariadb mariadb-server";
+$comando[10] = "yum install -y gcc gcc-c++ make mysql mysql-server mysql-devel pcre pcre-devel zlib zlib-devel git";
+$comando[11] = "yum -y update";
+$comando[12] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure";
+$comando[13] = "systemctl enable httpd.service | systemctl enable mariadb.service";
+$comando[14] = "systemctl start mariadb.service | systemctl start httpd.service";
 
 if (ob_get_level() == 0) ob_start(); 
 set_time_limit(1800);
 ob_implicit_flush(true);
 echo '<div style="width: 750px; height: 350px; border: 2px solid; border-color: #666; background: #F5F5F5; overflow: auto; padding: 10px;">';
-for ($i = 0; $i < 16; $i++) {
+for ($i = 0; $i < 15; $i++) {
 echo '<pre>'.$ssh->exec($comando[$i]).'</pre>';
 ob_flush();
 flush();
 usleep(50000);
-if ($i == 15) { $instalacao_completa = "sim"; }
+if ($i == 14) { $instalacao_completa = "sim"; }
 }
 echo '</div>';
 
@@ -93,6 +92,8 @@ Acessar painel de controle: <a href="http://<?php echo $ip; ?>/painel">Clique aq
 } else {
 ?>
 <a href="#" onClick="document.getElementById('instalacao').style.display='block'">Instalar emulador</a>
+<div id="instalacao" style="display:none">
+<br><br>
 Dados do seu VPS:<br><br>
 <form method="post" action="?a=instalacao">
 <table width="400px">

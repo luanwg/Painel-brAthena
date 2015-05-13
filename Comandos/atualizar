@@ -1,0 +1,12 @@
+#!/bin/bash -p
+case $1 in
+	'brAthena')
+	clear
+	date > /var/www/html/painel/logs/atualizar.txt &
+	svn update /usr/bin >> /var/www/html/painel/logs/atualizar.txt &
+	svn update /home/emulador >> /var/www/html/painel/logs/atualizar.txt &
+	svn update /var/www/html/painel >> /var/www/html/painel/logs/atualizar.txt &
+	svn update /var/www/html/phpMyAdmin >> /var/www/html/painel/logs/atualizar.txt &	
+	chmod 777 /usr/bin/sv | chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure
+;;
+esac

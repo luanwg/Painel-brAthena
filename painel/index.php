@@ -44,7 +44,7 @@ header('Location: index.php');
 </head>
 
 <body>
-<a href="?a=start">Start</a> - <a href="?a=stop">Stop</a>
+<a href="?a=start">Start</a> - <a href="?a=stop">Stop</a> - <a href="?a=restart">Restart</a> - <a href="?a=compilar">Compilar</a> - <a href="?a=atualizar">Atualizar</a>
 <br><br>
 <br>
 Status:<br>

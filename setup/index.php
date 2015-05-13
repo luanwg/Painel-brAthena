@@ -48,7 +48,7 @@ $comando[9] = "yum install -y httpd";
 $comando[10] = "yum install -y mariadb mariadb-server";
 $comando[11] = "yum install -y gcc gcc-c++ make mysql mysql-server mysql-devel pcre pcre-devel zlib zlib-devel git";
 $comando[12] = "yum -y update";
-$comando[13] = "chmod 777 /usr/bin/sv | chmod 777 /var/www/html/painel/logs/atualizar.txt | chmod 777 /var/www/html/painel/logs/char.txt | chmod 777 /var/www/html/painel/logs/login.txt | chmod 777 /var/www/html/painel/logs/map.txt | chmod 777 /var/www/html/painel/logs/compilar.txt | chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure";
+$comando[13] = "chmod 777 /usr/bin/sv | chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure";
 $comando[14] = "systemctl enable httpd.service | systemctl enable mariadb.service";
 $comando[15] = "systemctl start mariadb.service | systemctl start httpd.service";
 

@@ -1,5 +1,13 @@
 #!/bin/bash -p
 case $1 in
+	'atualizar')
+	clear
+	date > /var/www/html/painel/logs/atualizar.txt &
+	svn update /home/emulador >> /var/www/html/painel/logs/atualizar.txt &
+	svn update /var/www/html/phpMyAdmin >> /var/www/html/painel/logs/atualizar.txt &
+	svn update /var/www/html/painel >> /var/www/html/painel/logs/atualizar.txt &
+	chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure
+;;
     'start')
 	clear
 	cd /home/emulador;
@@ -28,10 +36,10 @@ case $1 in
 	'compilar')
 	clear
 	ps ax | grep -E "login-server|char-server|map-server" | awk '{print $1}' | xargs kill
-	date > /var/www/html/painel/logs/recompilar.txt &
+	date > /var/www/html/painel/logs/compilar.txt &
 	cd /home/emulador;
-	./configure >> /var/www/html/painel/logs/recompilar.txt &
-	make clean >> /var/www/html/painel/logs/recompilar.txt &
-	make sql >> /var/www/html/painel/logs/recompilar.txt &
+	./configure >> /var/www/html/painel/logs/compilar.txt &
+	make clean >> /var/www/html/painel/logs/compilar.txt &
+	make sql >> /var/www/html/painel/logs/compilar.txt &
 ;;
 esac

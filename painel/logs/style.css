@@ -1,0 +1,31 @@
+body {
+	background: #000;
+	color: #CCC;
+}
+.sucesso {
+	color: #060;
+}
+.info {
+	color: #FFF;
+}
+.aviso {
+	color: #FF9;
+}
+.conf {
+	color: #66F;
+}
+.depurar {
+	color: #0CC;
+}
+.sql {
+	color: #F0F;
+}
+.noticia {
+	color: #0C0;
+}
+.erro {
+	color: #F33;
+}
+.npc {
+	color: #660;
+}

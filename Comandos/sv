@@ -33,7 +33,7 @@ case $1 in
 	sh ./char-server.sh start >> /var/www/html/painel/logs/char.txt &
 	sh ./map-server.sh start >> /var/www/html/painel/logs/map.txt &
 ;;
-	'recompilar')
+	'compilar')
 	clear
 	ps ax | grep -E "login-server|char-server|map-server" | awk '{print $1}' | xargs kill
 	date > /var/www/html/painel/logs/recompilar.txt &

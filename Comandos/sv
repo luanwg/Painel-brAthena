@@ -1,10 +1,12 @@
 #!/bin/bash -p
 case $1 in
-	'instalar')
+	'instalar_centos7')
 	mkdir /var/www/html/phpMyAdmin
 	svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /var/www/html/phpMyAdmin
 	mkdir /home/emulador
 	svn co https://github.com/brAthena/brAthena/trunk /home/emulador
+	mkdir /var/www/html/painel
+	svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel
 	yum install -y php php-mysql php-cli php-gd php-mbstring php-mcrypt php-mhash php-pdo php-xmlrpc php-pear
 	pear channel-discover phpseclib.sourceforge.net
 	pear install phpseclib/Net_SSH2
@@ -12,6 +14,12 @@ case $1 in
 	yum install -y mariadb mariadb-server
 	yum install -y gcc gcc-c++ make mysql mysql-server mysql-devel pcre pcre-devel zlib zlib-devel git
 	yum -y update
+	cd /var/www/html/painel/logs
+	chmod 777 atualizar.txt
+	chmod 777 char.txt
+	chmod 777 login.txt
+	chmod 777 map.txt
+	chmod 777 compilar.txt
 	cd /home/emulador
 	chmod +x sysinfogen.sh
 	chmod 777 configure

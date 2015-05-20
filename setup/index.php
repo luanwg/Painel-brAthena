@@ -35,21 +35,31 @@ if ($ip != "" && $login != "" && $senha != "" && $so != "") {
 include('Net/SSH2.php');
 $ssh = new Net_SSH2($ip);
 if ($ssh->login($login, $senha)) {
-$comando[0] = "mkdir /var/www/html/phpMyAdmin | mkdir /var/www/html/painel | mkdir /home/emulador";
-$comando[1] = "yum install -y subversion";
-$comando[2] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /var/www/html/phpMyAdmin";
-$comando[3] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
-$comando[4] = "svn co https://github.com/brAthena/brAthena/trunk /home/emulador";
-$comando[5] = "yum install -y php php-mysql php-cli php-gd php-mbstring php-mhash php-pdo php-xmlrpc php-pear";
+$comando[0] = "yum install -y subversion";
+$comando[1] = "yum install -y httpd";
+$comando[2] = "yum install -y php php-mysql php-cli php-gd php-mbstring php-mhash php-pdo php-xmlrpc php-pear";
+$comando[3] = "yum install -y gcc gcc-c++ make pcre pcre-devel zlib zlib-devel git";
+if ($so == "centos6") {
+$comando[4] = "yum localinstall http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm";
+$comando[5] = "yum install -y mysql-community-server mysql-devel";
+} elseif ($so == "centos7") {
+$comando[4] = "yum install -y mariadb mariadb-server";
+$comando[5] = "yum install -y mysql mysql-server mysql-devel";
+}
 $comando[6] = "pear channel-discover phpseclib.sourceforge.net";
 $comando[7] = "pear install phpseclib/Net_SSH2";
-$comando[8] = "yum install -y httpd";
-$comando[9] = "yum install -y mariadb mariadb-server";
-$comando[10] = "yum install -y gcc gcc-c++ make mysql mysql-server mysql-devel pcre pcre-devel zlib zlib-devel git";
+$comando[8] = "svn co https://github.com/brAthena/brAthena/trunk /home/emulador";
+$comando[9] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /var/www/html/phpMyAdmin";
+$comando[10] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
 $comando[11] = "yum -y update";
 $comando[12] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure";
+if ($so == "centos6") {
+$comando[13] = "chkconfig httpd on | chkconfig mysqld on";
+$comando[14] = "service httpd start | service mysqld start";
+} elseif ($so == "centos7") {
 $comando[13] = "systemctl enable httpd.service | systemctl enable mariadb.service";
 $comando[14] = "systemctl start mariadb.service | systemctl start httpd.service";
+}
 
 if (ob_get_level() == 0) ob_start(); 
 set_time_limit(1800);
@@ -78,6 +88,7 @@ echo "Dados em branco!";
 <head>
 <meta charset="utf-8">
 <title>Painel de Instalação - brAthena</title>
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 </head>
 
 <body>

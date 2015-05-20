@@ -31,6 +31,43 @@ if (file_exists("../conf.php")) { echo "Por favor, exclua este diretório!!";  }
 </head>
 
 <body>
+Por favor, preencha todos os campos:
+<form method="post" action="">
+<table>
+<tr>
+<td>Defina Senha root (MySql):</td>
+<td><input type="password" name="senha_root"></td>
+</tr>
+<tr>
+<td>Digite novamente:</td>
+<td><input type="password" name="csenha_root"></td>
+</tr>
+<tr>
+<td>Crie um usuario (Mysql):</td>
+<td><input type="text" name="login"></td>
+</tr>
+<tr>
+<td>Defina Senha para o usuario:</td>
+<td><input type="password" name="senha_usuario"></td>
+</tr>
+<tr>
+<td>Digite novamente:</td>
+<td><input type="password" name="csenha_usuario"></td>
+</tr>
+<tr>
+<td>Crie um usuario (Painel):</td>
+<td><input type="text" name="login"></td>
+</tr>
+<tr>
+<td>Defina Senha para o usuario:</td>
+<td><input type="password" name="senha_usuariop"></td>
+</tr>
+<tr>
+<td>Digite novamente:</td>
+<td><input type="password" name="csenha_usuariop"></td>
+</tr>
+</table>
+</form>
 </body>
 </html>
 <?php

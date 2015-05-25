@@ -29,9 +29,7 @@ $a = $_GET['a'];
 include('Net/SSH2.php');
 
 if ($a == "start") {
-shell_exec('sv start');
-sleep(2);
-header('Location: index.php'); 
+$ssh->exec(""); 
 }
 
 if ($a == "stop") {

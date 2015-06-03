@@ -59,7 +59,8 @@ mysql_query("CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` int(2) NOT NULL,
   `login` varchar(20) NOT NULL,
   `senha` varchar(20) NOT NULL,
-  `email` varchar(50) NOT NULL
+  `email` varchar(50) NOT NULL,
+  `level` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`);
@@ -84,7 +85,7 @@ $sql_logs = fopen("/home/emulador/sql/logs.sql", "r");
 mysql_select_db("brAthena_Logs", $con_sql) or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".mysql_error());
 mysql_query($sql_logs);
 fclose($sql_logs);
-if ($versao == "ot") { $sql_db = fopen("/home/emulador/sql/old-times/old-times.sql", "r"); } elseif ($versao == "ot") { $sql_db = fopen("/home/emulador/sql/pre-renovacao/pre-renovacao.sql", "r"); } else { $sql_db = fopen("/home/emulador/sql/renovacao/renovacao.sql", "r"); }
+if ($versao == "ot") { $sql_db = fopen("/home/emulador/sql/old-times/old-times.sql", "r"); } elseif ($versao == "pre") { $sql_db = fopen("/home/emulador/sql/pre-renovacao/pre-renovacao.sql", "r"); } else { $sql_db = fopen("/home/emulador/sql/renovacao/renovacao.sql", "r"); }
 mysql_select_db("brAthena_DB", $con_db) or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".mysql_error());
 mysql_query($sql_logs);
 fclose($sql_db);

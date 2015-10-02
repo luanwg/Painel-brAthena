@@ -100,6 +100,7 @@ fwrite($conf, $php_conf);
 fclose($conf);
 
 $sql->query("SET PASSWORD FOR 'root'@'localhost' = PASSWORD('".$senha_root."')");
+unlink("../../phpMyAdmin/setup");
 header('Location: /painel');
 } else {
 echo "Senhas não coincidem!";	

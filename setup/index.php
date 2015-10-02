@@ -35,10 +35,10 @@ if ($ip != "" && $login != "" && $senha != "" && $so != "") {
 require_once('Net/SSH2.php');
 $ssh = new Net_SSH2($ip);
 if ($ssh->login($login, $senha)) {
-$comando[0] = "yum install -y subversion";
-$comando[1] = "yum install -y httpd";
-$comando[2] = "yum install -y php php-mysql php-cli php-gd php-mbstring php-mhash php-pdo php-xmlrpc php-pear";
-$comando[3] = "yum install -y gcc gcc-c++ make pcre pcre-devel zlib zlib-devel git";
+$comando[0] = "rpm -Uvh http://mirror.webtatic.com/yum/el6/latest.rpm";
+$comando[1] = "rpm -ivh http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/i386/epel-release-6-8.noarch.rpm";
+$comando[2] = "yum -y update";
+$comando[3] = "yum install -y subversion httpd php php-mysql php-cli php-gd php-mbstring php-mhash php-pdo php-xmlrpc php-pear gcc gcc-c++ make pcre pcre-devel zlib zlib-devel git phpMyAdmin";;
 if ($so == "centos6") {
 $comando[4] = "yum localinstall -y http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm";
 $comando[5] = "yum install -y mysql-community-server mysql-devel";
@@ -49,7 +49,7 @@ $comando[5] = "yum install -y mysql mysql-server mysql-devel";
 $comando[6] = "pear channel-discover phpseclib.sourceforge.net";
 $comando[7] = "pear install phpseclib/Net_SSH2";
 $comando[8] = "svn co https://github.com/brAthena/brAthena/trunk /home/emulador";
-$comando[9] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /var/www/html/phpMyAdmin";
+$comando[9] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin/config.inc.php /var/www/html/phpMyAdmin";
 $comando[10] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
 $comando[11] = "yum -y update";
 $comando[12] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure";
@@ -65,7 +65,7 @@ if (ob_get_level() == 0) ob_start();
 set_time_limit(1800);
 ob_implicit_flush(true);
 echo '<div style="width: 750px; height: 350px; border: 2px solid; border-color: #666; background: #F5F5F5; overflow: auto; padding: 10px;">';
-for ($i = 0; $i < 15; $i++) {
+for ($i = 0; $i < count($comando); $i++) {
 echo '<pre>'.$ssh->exec($comando[$i]).'</pre>';
 ob_flush();
 flush();

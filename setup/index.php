@@ -49,17 +49,16 @@ $comando[5] = "yum install -y mysql mysql-server mysql-devel";
 $comando[6] = "pear channel-discover phpseclib.sourceforge.net";
 $comando[7] = "pear install phpseclib/Net_SSH2";
 $comando[8] = "svn co https://github.com/brAthena/brAthena/trunk /home/emulador";
-$comando[9] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin/config.inc.php /etc/phpMyAdmin";
-$comando[10] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin/phpMyAdmin.conf /etc/httpd/conf.d";
-$comando[11] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
-$comando[12] = "yum -y update";
-$comando[13] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure";
+$comando[9] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /etc/httpd/conf.d";
+$comando[10] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
+$comando[11] = "yum -y update";
+$comando[12] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure";
 if ($so == "centos6") {
-$comando[14] = "chkconfig httpd on | chkconfig mysqld on";
-$comando[15] = "service httpd start | service mysqld start";
+$comando[13] = "chkconfig httpd on | chkconfig mysqld on";
+$comando[14] = "service httpd start | service mysqld start";
 } elseif ($so == "centos7") {
-$comando[14] = "systemctl enable httpd.service | systemctl enable mariadb.service";
-$comando[15] = "systemctl start mariadb.service | systemctl start httpd.service";
+$comando[13] = "systemctl enable httpd.service | systemctl enable mariadb.service";
+$comando[14] = "systemctl start mariadb.service | systemctl start httpd.service";
 }
 
 if (ob_get_level() == 0) ob_start(); 
@@ -71,9 +70,17 @@ echo '<pre>'.$ssh->exec($comando[$i]).'</pre>';
 ob_flush();
 flush();
 usleep(50000);
-if ($i == 14) { $instalacao_completa = "sim"; }
+if ($i == count($comando)) { $instalacao_completa = "sim"; }
 }
 echo '</div>';
+
+$cont = file_get_contents("/etc/phpMyAdmin/config.inc.php");
+$txt1 = "= FALSE;       // default unless you're running a passwordless MySQL server";
+$txt2 = "= TRUE;        // default unless you're running a passwordless MySQL server";
+$escreve = str_replace($txt1, $txt2, $cont);
+$novo = fopen("/etc/phpMyAdmin/config.inc.php", "w");
+fwrite($novo, $escreve);
+fclose($novo);
 
 } else {
 	echo "Login erro";

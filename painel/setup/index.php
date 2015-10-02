@@ -53,11 +53,11 @@ $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '".$login."'@'%' WITH
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '".$login."'@'%' WITH GRANT OPTION");
 
 $sql->close();
-$sql = new MySQLi('localhost','".$login."','".$senha_usuario."');
+$sql = new MySQLi('localhost',$login,$senha_usuario);
 
 $sql->query("DROP USER 'root'");
 
-$sql->select_db("brAthena_Painel") or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".$sql->error);
+$sql->select_db("brAthena_Painel");
 $sql->query("CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` int(2) NOT NULL,
   `login` varchar(20) NOT NULL,
@@ -79,19 +79,16 @@ ALTER TABLE `ssh`
 $sql->query("INSERT INTO `usuarios` (`login`, senha, email) VALUES ('".$loginp."', '".$senha_usuariop."', '".$email."')");
 $sql->query("INSERT INTO `ssh` (ip, `login`, senha) VALUES ('".$ip."', '".$ssh_login."', '".$ssh_senha."')");
 
-$sql_principal = fopen("/home/emulador/sql/principal.sql", "r");
-$sql->select_db("brAthena_Principal") or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".$sql->error);
+$sql_principal = file_get_contents("/home/emulador/sql/principal.sql");
+$sql->select_db("brAthena_Principal");
 $sql->query($sql_principal);
 $sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('".$loginp."', '".$senha_usuariop."', 'M', '".$email."', '99')");
-fclose($sql_principal);
-$sql_logs = fopen("/home/emulador/sql/logs.sql", "r");
-$sql->select_db("brAthena_Logs") or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".$sql->error);
+$sql_logs = file_get_contents("/home/emulador/sql/logs.sql");
+$sql->select_db("brAthena_Logs") ;
 $sql->query($sql_logs);
-fclose($sql_logs);
-if ($versao == "pre") { $sql_db = fopen("/home/emulador/sql/pre-renovacao/pre-renovacao.sql", "r"); } else { $sql_db = fopen("/home/emulador/sql/renovacao/renovacao.sql", "r"); }
-$sql->select_db("brAthena_DB") or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".$sql->error);
+if ($versao == "pre") { $sql_db = file_get_contents("/home/emulador/sql/pre-renovacao/pre-renovacao.sql"); } else { $sql_db = file_get_contents("/home/emulador/sql/renovacao/renovacao.sql"); }
+$sql->select_db("brAthena_DB");
 $sql->query($sql_logs);
-fclose($sql_db);
 
 $conf = fopen("../conf.php", "w");
 $php_conf = '<?php\n

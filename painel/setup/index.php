@@ -39,23 +39,25 @@ $email = $_POST['email'];
 $versao = $_POST['versao'];
 if ($ip != "" && $ssh_login != "" && $ssh_senha != "" && $senha_root != "" && $csenha_root != "" && $login != "" && $senha_usuario != "" && $csenha_usuario != "" && $loginp != "" && $senha_usuariop != "" && $csenha_usuariop != "" && $email != ""  && $versao != "") {
 if ($senha_root == $csenha_root && $senha_usuario == $csenha_usuario && $senha_usuariop == $csenha_usuariop) {
-$con_sql = mysql_connect("localhost", "root", "") or die ("Servidor não responde");
-mysql_query("DROP USER 'root'@'127.0.0.1'");
-mysql_query("DROP USER 'teste'@'::1'");
-mysql_query("DROP USER 'teste'@'%'");
-mysql_query("DROP DATABASE test");
-mysql_query("CREATE USER '".$login."'@'%' IDENTIFIED BY '".$senha_usuario."';GRANT ALL PRIVILEGES ON *.* TO '".$login."'@'%' IDENTIFIED BY '".$senha_usuario."' REQUIRE NONE WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0");
-mysql_query("CREATE DATABASE brAthena_Painel");
-mysql_query("CREATE DATABASE brAthena_Principal");
-mysql_query("CREATE DATABASE brAthena_Logs");
-mysql_query("CREATE DATABASE brAthena_DB");
-mysql_query("GRANT ALL PRIVILEGES ON `brAthena\_Painel`.* TO '".$login."'@'%' WITH GRANT OPTION");
-mysql_query("GRANT ALL PRIVILEGES ON `brAthena\_Principal`.* TO '".$login."'@'%' WITH GRANT OPTION");
-mysql_query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '".$login."'@'%' WITH GRANT OPTION");
-mysql_query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '".$login."'@'%' WITH GRANT OPTION");
+$sql = new MySQLi('localhost','root','');
+if ($sql->connect_errno) {
+    die('Connect Error: ' . $sql->connect_errno);
+}
+$sql->query("DROP USER 'root'@'127.0.0.1'");
+$sql->query("DROP USER 'test'");
+$sql->query("DROP DATABASE test");
+$sql->query("CREATE USER '".$login."'@'%' IDENTIFIED BY '".$senha_usuario."';GRANT ALL PRIVILEGES ON *.* TO '".$login."'@'%' IDENTIFIED BY '".$senha_usuario."' REQUIRE NONE WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0");
+$sql->query("CREATE DATABASE brAthena_Painel");
+$sql->query("CREATE DATABASE brAthena_Principal");
+$sql->query("CREATE DATABASE brAthena_Logs");
+$sql->query("CREATE DATABASE brAthena_DB");
+$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Painel`.* TO '".$login."'@'%' WITH GRANT OPTION");
+$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Principal`.* TO '".$login."'@'%' WITH GRANT OPTION");
+$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '".$login."'@'%' WITH GRANT OPTION");
+$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '".$login."'@'%' WITH GRANT OPTION");
 
-mysql_select_db("brAthena_Painel", $con_sql) or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".mysql_error());
-mysql_query("CREATE TABLE IF NOT EXISTS `usuarios` (
+$sql->select_db("brAthena_Painel") or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".$sql->error);
+$sql->query("CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` int(2) NOT NULL,
   `login` varchar(20) NOT NULL,
   `senha` varchar(20) NOT NULL,
@@ -66,39 +68,39 @@ ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`);
   ALTER TABLE `usuarios`
   MODIFY `id` int(2) NOT NULL AUTO_INCREMENT;");
-mysql_query("CREATE TABLE IF NOT EXISTS `ssh` (
+$sql->query("CREATE TABLE IF NOT EXISTS `ssh` (
   `ip` varchar(15) NOT NULL,
   `login` varchar(20) NOT NULL,
   `senha` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ALTER TABLE `ssh`
   ADD PRIMARY KEY (`ip`);");
-mysql_query("INSERT INTO `usuarios` (`login`, senha, email) VALUES ('".$loginp."', '".$senha_usuariop."', '".$email."')");
-mysql_query("INSERT INTO `ssh` (ip, `login`, senha) VALUES ('".$ip."', '".$ssh_login."', '".$ssh_senha."')");
+$sql->query("INSERT INTO `usuarios` (`login`, senha, email) VALUES ('".$loginp."', '".$senha_usuariop."', '".$email."')");
+$sql->query("INSERT INTO `ssh` (ip, `login`, senha) VALUES ('".$ip."', '".$ssh_login."', '".$ssh_senha."')");
 
 $sql_principal = fopen("/home/emulador/sql/principal.sql", "r");
-mysql_select_db("brAthena_Principal", $con_sql) or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".mysql_error());
-mysql_query($sql_principal);
-mysql_query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('".$loginp."', '".$senha_usuariop."', 'M', '".$email."', '99')");
+$sql->select_db("brAthena_Principal") or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".$sql->error);
+$sql->query($sql_principal);
+$sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('".$loginp."', '".$senha_usuariop."', 'M', '".$email."', '99')");
 fclose($sql_principal);
 $sql_logs = fopen("/home/emulador/sql/logs.sql", "r");
-mysql_select_db("brAthena_Logs", $con_sql) or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".mysql_error());
-mysql_query($sql_logs);
+$sql->select_db("brAthena_Logs") or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".$sql->error);
+$sql->query($sql_logs);
 fclose($sql_logs);
-if ($versao == "ot") { $sql_db = fopen("/home/emulador/sql/old-times/old-times.sql", "r"); } elseif ($versao == "pre") { $sql_db = fopen("/home/emulador/sql/pre-renovacao/pre-renovacao.sql", "r"); } else { $sql_db = fopen("/home/emulador/sql/renovacao/renovacao.sql", "r"); }
-mysql_select_db("brAthena_DB", $con_db) or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".mysql_error());
-mysql_query($sql_logs);
+if ($versao == "pre") { $sql_db = fopen("/home/emulador/sql/pre-renovacao/pre-renovacao.sql", "r"); } else { $sql_db = fopen("/home/emulador/sql/renovacao/renovacao.sql", "r"); }
+$sql->select_db("brAthena_DB") or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".$sql->error);
+$sql->query($sql_logs);
 fclose($sql_db);
 
 $conf = fopen("../conf.php", "w");
 $php_conf = '<?php\n
-$con_sql = mysql_connect("localhost", "$login", "$senha_usuario") or die ("Servidor não responde");\n
+$sql = new MySQLi(\'localhost\', \''.$login.'\', \''.$senha_usuario.'\');\n
 ?>';
 fwrite($conf, $php_conf);
 fclose($conf);
 
-mysql_query("SET PASSWORD FOR 'root'@'localhost' = PASSWORD('".$senha_root."')");
-header('Location: /');
+$sql->query("SET PASSWORD FOR 'root'@'localhost' = PASSWORD('".$senha_root."')");
+header('Location: /painel');
 } else {
 echo "Senhas não coincidem!";	
 }
@@ -168,7 +170,7 @@ Por favor, preencha todos os campos:
 </tr>
 <tr>
 <td>Selecione a versão do jogo que deseja importar:</td>
-<td><input type="radio" name="versao" value="ot" id="ot"><label for="ot"> OldTimes</label> | <input type="radio" name="versao" value="pre" id="pre"><label for="pre"> Pre-RE</label> | <input type="radio" name="versao" value="re" id="re"><label for="re"> Renew</label></td>
+<td><input type="radio" name="versao" value="pre" id="pre"><label for="pre"> Pre-RE</label> | <input type="radio" name="versao" value="re" id="re"><label for="re"> Renew</label></td>
 </tr>
 </table>
 <input type="submit" value="Instalar">

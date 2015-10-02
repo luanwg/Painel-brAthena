@@ -32,7 +32,7 @@ $login = $_POST['login'];
 $senha = $_POST['senha'];
 $so = $_POST['so'];
 if ($ip != "" && $login != "" && $senha != "" && $so != "") {
-include('Net/SSH2.php');
+require_once('Net/SSH2.php');
 $ssh = new Net_SSH2($ip);
 if ($ssh->login($login, $senha)) {
 $comando[0] = "yum install -y subversion";
@@ -40,7 +40,7 @@ $comando[1] = "yum install -y httpd";
 $comando[2] = "yum install -y php php-mysql php-cli php-gd php-mbstring php-mhash php-pdo php-xmlrpc php-pear";
 $comando[3] = "yum install -y gcc gcc-c++ make pcre pcre-devel zlib zlib-devel git";
 if ($so == "centos6") {
-$comando[4] = "yum localinstall http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm";
+$comando[4] = "yum localinstall -y http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm";
 $comando[5] = "yum install -y mysql-community-server mysql-devel";
 } elseif ($so == "centos7") {
 $comando[4] = "yum install -y mariadb mariadb-server";
@@ -114,6 +114,8 @@ Dados do seu VPS:<br><br>
 <tr>
 <td>Sistema Operacional:</td><td>
 <select name="so">
+<option value="">Selecione</option>
+<option value="centos6">CentOS 6</option>
 <option value="centos7">CentOS 7</option>
 </select>
 </td>

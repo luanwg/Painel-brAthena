@@ -27,8 +27,6 @@ if ($a == "configurar") {
 $ip = $_POST['ip'];
 $ssh_login = $_POST['ssh_login'];
 $ssh_senha = $_POST['ssh_senha'];
-$senha_root = $_POST['senha_root'];
-$csenha_root = $_POST['csenha_root'];
 $login = $_POST['login'];
 $senha_usuario = $_POST['senha_usuario'];
 $csenha_usuario = $_POST['csenha_usuario'];
@@ -37,16 +35,14 @@ $senha_usuariop = $_POST['senha_usuariop'];
 $csenha_usuariop = $_POST['csenha_usuariop'];
 $email = $_POST['email'];
 $versao = $_POST['versao'];
-if ($ip != "" && $ssh_login != "" && $ssh_senha != "" && $senha_root != "" && $csenha_root != "" && $login != "" && $senha_usuario != "" && $csenha_usuario != "" && $loginp != "" && $senha_usuariop != "" && $csenha_usuariop != "" && $email != ""  && $versao != "") {
-if ($senha_root == $csenha_root && $senha_usuario == $csenha_usuario && $senha_usuariop == $csenha_usuariop) {
+if ($ip != "" && $ssh_login != "" && $ssh_senha != "" && $login != "" && $senha_usuario != "" && $csenha_usuario != "" && $loginp != "" && $senha_usuariop != "" && $csenha_usuariop != "" && $email != ""  && $versao != "") {
+if ($senha_usuario == $csenha_usuario && $senha_usuariop == $csenha_usuariop) {
 $sql = new MySQLi('localhost','root','');
 if ($sql->connect_errno) {
     die('Connect Error: ' . $sql->connect_errno);
 }
-$sql->query("DROP USER 'root'@'127.0.0.1'");
-$sql->query("DROP USER 'test'");
-$sql->query("DROP DATABASE test");
-$sql->query("CREATE USER '".$login."'@'%' IDENTIFIED BY '".$senha_usuario."';GRANT ALL PRIVILEGES ON *.* TO '".$login."'@'%' IDENTIFIED BY '".$senha_usuario."' REQUIRE NONE WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0");
+
+$sql->query("CREATE USER '".$login."'@'localhost' IDENTIFIED BY '".$senha_usuario."'; GRANT ALL PRIVILEGES ON *.* TO '".$login."'@'localhost' IDENTIFIED BY '".$senha_usuario."' WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0");
 $sql->query("CREATE DATABASE brAthena_Painel");
 $sql->query("CREATE DATABASE brAthena_Principal");
 $sql->query("CREATE DATABASE brAthena_Logs");
@@ -55,6 +51,11 @@ $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Painel`.* TO '".$login."'@'%' WI
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Principal`.* TO '".$login."'@'%' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '".$login."'@'%' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '".$login."'@'%' WITH GRANT OPTION");
+
+$sql->close();
+$sql = new MySQLi('localhost','".$login."','".$senha_usuario."');
+
+$sql->query("DROP USER 'root'");
 
 $sql->select_db("brAthena_Painel") or die ("Não foi possivel selecionar o Banco de Dados. Erro: ".$sql->error);
 $sql->query("CREATE TABLE IF NOT EXISTS `usuarios` (
@@ -99,8 +100,6 @@ $sql = new MySQLi(\'localhost\', \''.$login.'\', \''.$senha_usuario.'\');\n
 fwrite($conf, $php_conf);
 fclose($conf);
 
-$sql->query("SET PASSWORD FOR 'root'@'localhost' = PASSWORD('".$senha_root."')");
-unlink("../../phpMyAdmin/setup");
 header('Location: /painel');
 } else {
 echo "Senhas não coincidem!";	
@@ -132,14 +131,6 @@ Por favor, preencha todos os campos:
 <tr>
 <td>Senha SSH:</td>
 <td><input type="text" name="ssh_senha"></td>
-</tr>
-<tr>
-<td>Defina Senha root (MySql):</td>
-<td><input type="password" name="senha_root"></td>
-</tr>
-<tr>
-<td>Digite novamente:</td>
-<td><input type="password" name="csenha_root"></td>
 </tr>
 <tr>
 <td>Crie um usuario (Mysql):</td>

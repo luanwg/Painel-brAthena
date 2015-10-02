@@ -37,25 +37,30 @@ $email = $_POST['email'];
 $versao = $_POST['versao'];
 if ($ip != "" && $ssh_login != "" && $ssh_senha != "" && $login != "" && $senha_usuario != "" && $csenha_usuario != "" && $loginp != "" && $senha_usuariop != "" && $csenha_usuariop != "" && $email != ""  && $versao != "") {
 if ($senha_usuario == $csenha_usuario && $senha_usuariop == $csenha_usuariop) {
+
+$cont = file_get_contents("/etc/phpMyAdmin/config.inc.php");
+$txt1 = "= FALSE;       // default unless you're running a passwordless MySQL server";
+$txt2 = "= TRUE;        // default unless you're running a passwordless MySQL server";
+$escreve = str_replace($txt1, $txt2, $cont);
+$novo = fopen("/etc/phpMyAdmin/config.inc.php", "w");
+fwrite($novo, $escreve);
+fclose($novo);
+
 $sql = new MySQLi('localhost','root','');
 if ($sql->connect_errno) {
     die('Connect Error: ' . $sql->connect_errno);
 }
 
-$sql->query("CREATE USER '".$login."'@'localhost' IDENTIFIED BY '".$senha_usuario."'; GRANT ALL PRIVILEGES ON *.* TO '".$login."'@'localhost' IDENTIFIED BY '".$senha_usuario."' WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0");
+$sql->query("CREATE USER '$login'@'localhost' IDENTIFIED BY '$senha_usuario'");
+$sql->query("GRANT ALL PRIVILEGES ON * . * TO '$login'@'localhost' IDENTIFIED BY '$senha_usuario' WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0");
 $sql->query("CREATE DATABASE brAthena_Painel");
 $sql->query("CREATE DATABASE brAthena_Principal");
 $sql->query("CREATE DATABASE brAthena_Logs");
 $sql->query("CREATE DATABASE brAthena_DB");
-$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Painel`.* TO '".$login."'@'%' WITH GRANT OPTION");
-$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Principal`.* TO '".$login."'@'%' WITH GRANT OPTION");
-$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '".$login."'@'%' WITH GRANT OPTION");
-$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '".$login."'@'%' WITH GRANT OPTION");
-
-$sql->close();
-$sql = new MySQLi('localhost',$login,$senha_usuario);
-
-$sql->query("DROP USER 'root'");
+$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Painel`.* TO '$login'@'localhost' WITH GRANT OPTION");
+$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Principal`.* TO '$login'@'localhost' WITH GRANT OPTION");
+$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '$login'@'localhost' WITH GRANT OPTION");
+$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '$login'@'localhost' WITH GRANT OPTION");
 
 $sql->select_db("brAthena_Painel");
 $sql->query("CREATE TABLE IF NOT EXISTS `usuarios` (
@@ -76,13 +81,13 @@ $sql->query("CREATE TABLE IF NOT EXISTS `ssh` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ALTER TABLE `ssh`
   ADD PRIMARY KEY (`ip`);");
-$sql->query("INSERT INTO `usuarios` (`login`, senha, email) VALUES ('".$loginp."', '".$senha_usuariop."', '".$email."')");
-$sql->query("INSERT INTO `ssh` (ip, `login`, senha) VALUES ('".$ip."', '".$ssh_login."', '".$ssh_senha."')");
+$sql->query("INSERT INTO `usuarios` (`login`, senha, email) VALUES ('$loginp', '$senha_usuariop', '$email')");
+$sql->query("INSERT INTO `ssh` (ip, `login`, senha) VALUES ('$ip', '$ssh_login', '$ssh_senha')");
 
 $sql_principal = file_get_contents("/home/emulador/sql/principal.sql");
 $sql->select_db("brAthena_Principal");
 $sql->query($sql_principal);
-$sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('".$loginp."', '".$senha_usuariop."', 'M', '".$email."', '99')");
+$sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('$loginp', '$senha_usuariop', 'M', '$email', '99')");
 $sql_logs = file_get_contents("/home/emulador/sql/logs.sql");
 $sql->select_db("brAthena_Logs") ;
 $sql->query($sql_logs);
@@ -90,10 +95,10 @@ if ($versao == "pre") { $sql_db = file_get_contents("/home/emulador/sql/pre-reno
 $sql->select_db("brAthena_DB");
 $sql->query($sql_logs);
 
-$conf = fopen("../conf.php", "w");
-$php_conf = '<?php\n
-$sql = new MySQLi(\'localhost\', \''.$login.'\', \''.$senha_usuario.'\');\n
-?>';
+$conf = fopen("/var/www/html/conf.php", "w");
+$php_conf = "<?php\n
+$sql = new MySQLi('localhost', '".$login."', '".$senha_usuario."');\n
+?>";
 fwrite($conf, $php_conf);
 fclose($conf);
 

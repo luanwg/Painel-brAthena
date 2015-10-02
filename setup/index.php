@@ -52,7 +52,7 @@ $comando[8] = "svn co https://github.com/brAthena/brAthena/trunk /home/emulador"
 $comando[9] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /etc/httpd/conf.d";
 $comando[10] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
 $comando[11] = "yum -y update";
-$comando[12] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure";
+$comando[12] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure | chmod 760 /etc/phpMyAdmin/config.inc.php";
 if ($so == "centos6") {
 $comando[13] = "chkconfig httpd on | chkconfig mysqld on";
 $comando[14] = "service httpd start | service mysqld start";
@@ -60,6 +60,14 @@ $comando[14] = "service httpd start | service mysqld start";
 $comando[13] = "systemctl enable httpd.service | systemctl enable mariadb.service";
 $comando[14] = "systemctl start mariadb.service | systemctl start httpd.service";
 }
+$comando[15] = "mysql";
+$comando[16] = "USE mysql;";
+$comando[17] = "DELETE FROM mysql.user WHERE User='';";
+$comando[18] = "DELETE FROM mysql.user WHERE Host NOT IN ('localhost', '127.0.0.1', '::1');";
+$comando[19] = "DROP DATABASE IF EXISTS test;";
+$comando[20] = "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';";
+$comando[21] = "FLUSH PRIVILEGES;";
+$comando[22] = "exit";
 
 if (ob_get_level() == 0) ob_start(); 
 set_time_limit(1800);
@@ -73,14 +81,6 @@ usleep(50000);
 if ($i == count($comando)) { $instalacao_completa = "sim"; }
 }
 echo '</div>';
-
-$cont = file_get_contents("/etc/phpMyAdmin/config.inc.php");
-$txt1 = "= FALSE;       // default unless you're running a passwordless MySQL server";
-$txt2 = "= TRUE;        // default unless you're running a passwordless MySQL server";
-$escreve = str_replace($txt1, $txt2, $cont);
-$novo = fopen("/etc/phpMyAdmin/config.inc.php", "w");
-fwrite($novo, $escreve);
-fclose($novo);
 
 } else {
 	echo "Login erro";

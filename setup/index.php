@@ -53,7 +53,7 @@ $comando[9] = "rm -rf /etc/httpd/conf.d/phpMyAdmin.conf";
 $comando[10] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /etc/httpd/conf.d";
 $comando[11] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
 $comando[12] = "yum -y update";
-$comando[13] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure | chmod 646 /etc/phpMyAdmin/config.inc.php | chmod 646 /var/www/html/painel/confs.php";
+$comando[13] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure | chmod 646 /var/www/html/painel/confs.php";
 if ($so == "centos6") {
 $comando[14] = "chkconfig httpd on | chkconfig mysqld on";
 $comando[15] = "service httpd start | service mysqld start";
@@ -72,7 +72,7 @@ echo '<pre>'.$ssh->exec($comando[$i]).'</pre>';
 ob_flush();
 flush();
 usleep(50000);
-if ($i == count($comando)) { $instalacao_completa = "sim"; }
+if ($i == (count($comando) - 1)) { $instalacao_completa = "sim"; }
 }
 echo '</div>';
 

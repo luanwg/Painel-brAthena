@@ -38,13 +38,13 @@ $versao = $_POST['versao'];
 if ($ip != "" && $ssh_login != "" && $ssh_senha != "" && $login != "" && $senha_usuario != "" && $csenha_usuario != "" && $loginp != "" && $senha_usuariop != "" && $csenha_usuariop != "" && $email != ""  && $versao != "") {
 if ($senha_usuario == $csenha_usuario && $senha_usuariop == $csenha_usuariop) {
 
-$cont = file_get_contents("/etc/phpMyAdmin/config.inc.php");
+/*$cont = file_get_contents("/etc/phpMyAdmin/config.inc.php");
 $txt1 = "= FALSE;       // default unless you're running a passwordless MySQL server";
 $txt2 = "= TRUE;        // default unless you're running a passwordless MySQL server";
 $escreve = str_replace($txt1, $txt2, $cont);
 $novo = fopen("/etc/phpMyAdmin/config.inc.php", "w");
 fwrite($novo, $escreve);
-fclose($novo);
+fclose($novo);*/
 
 $sql = new MySQLi('localhost','root','');
 if ($sql->connect_errno) {
@@ -73,7 +73,7 @@ $sql->query($sql_logs);
 
 $confs = file_get_contents("/var/www/html/painel/confs.php");
 $txt1c = array('"SQLUSER", ""','"SQLPASS", ""','"SSHIP", ""','"SSHUSER", ""','"SSHPASS", ""');
-$txt2c = array('"SQLUSER", "$login"','"SQLPASS", "$senha_usuario"','"SSHIP", "$ip"','"SSHUSER", "$ssh_login"','"SSHPASS", "$ssh_senha"');
+$txt2c = array('"SQLUSER", "'.$login.'"','"SQLPASS", "'.$senha_usuario.'"','"SSHIP", "'.$ip.'"','"SSHUSER", "'.$ssh_login.'"','"SSHPASS", "'.$ssh_senha.'"');
 $escreveconfs = str_replace($txt1c, $txt2c, $confs);
 $novoconfs = fopen("/var/www/html/painel/confs.php", "w");
 fwrite($novoconfs, $escreveconfs);
@@ -81,11 +81,13 @@ fclose($novoconfs);
 
 $sql->query("USE mysql");
 $sql->query("DELETE FROM mysql.user WHERE User='' OR User='root'");
-//$sql->query("DELETE FROM mysql.user WHERE Host NOT IN ('localhost', '127.0.0.1', '::1')");
 $sql->query("DROP DATABASE IF EXISTS test");
 $sql->query("DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'");
 
-header('Location: /painel');
+include_once("../confs.php");
+$ssh->exec("chmod 464 /var/www/html/painel/confs.php");
+
+echo '<script>alert("Configurações realizadas com sucesso!"); location.href="/painel";</script>';
 } else {
 echo "Senhas não coincidem!";	
 }

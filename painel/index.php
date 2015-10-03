@@ -21,10 +21,8 @@
 // | - Anotações                                                |
 // \____________________________________________________________/
 
-if (!file_exists("conf.php")) { header('Location: setup');  }
 $a = $_GET['a'];
-if (!file_exists("setup/index.php") && $a != "excluir-setup") { echo "Antes de prosseguir você precisa excluir o diretório 'setup'.<br>Excluir agora: <a href='?a=excluir-setup'>Clique Aqui</a>";  }
-elseif ($a == "excluir-setup") { unlink("setup"); header('Location: /painel'); } else {
+if ($a == "excluir-setup") { unlink("setup"); header('Location: /painel'); }
 include('Net/SSH2.php');
 
 if ($a == "start") {
@@ -66,5 +64,3 @@ Map: <?php echo "$Status[2]"; ?> - <a target="_blank" href="logs/index.php?log=m
 Recompilação:  - <a target="_blank" href="logs/index.php?log=compilacao">Logs</a>
 </body>
 </html>
-<?php
-}

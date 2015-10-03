@@ -100,7 +100,7 @@ if ($instalacao_completa == "sim") {
 ?>
 <br><br>
 <strong>Sua instalação está completa!!</strong><br>
-Acessar painel de controle: <a href="http://<?php echo $ip; ?>/painel">Clique aqui</a>
+Acessar painel de controle: <a href="http://<?php echo $ip; ?>/painel/setup">Clique aqui</a>
 <?php
 } else {
 ?>

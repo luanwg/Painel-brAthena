@@ -21,7 +21,6 @@
 // | - Anotações                                                |
 // \____________________________________________________________/
 
-if (file_exists("../conf.php")) { echo "Por favor, exclua este diretório!!";  } else {
 $a = $_GET['a'];
 if ($a == "configurar") {
 $ip = $_POST['ip'];
@@ -67,7 +66,7 @@ include_once("../confs.php");
 $ssh->exec("mysql -u ".SQLUSER." -p".SQLPASS." brAthena_Principal < /home/emulador/sql/principal.sql");
 $ssh->exec("mysql -u ".SQLUSER." -p".SQLPASS." brAthena_Logs < /home/emulador/sql/logs.sql");
 if ($versao == "pre") { $vs = "pre-renovacao/pre-renovacao.sql"; } else { $vs = "renovacao/renovacao.sql"; }
-$ssh->exec("mysql -u ".SQLUSER." -p".SQLPASS." brAthena_Principal < /home/emulador/sql/".$vs."");
+$ssh->exec("mysql -u ".SQLUSER." -p".SQLPASS." brAthena_DB < /home/emulador/sql/".$vs."");
 
 $sql->select_db("brAthena_Principal");
 $sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('$loginp', '$senha_usuariop', 'M', '$email', '99')");
@@ -78,7 +77,7 @@ $sql->query("DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'");
 $sql->query("DELETE FROM mysql.user WHERE User='' OR User='root'");
 
 if ($ssh->exec("chmod 644 /var/www/html/painel/confs.php")) {
-$configurado = "sim";	
+header("Location: http://".$ip."/painel/?a=excluir-setup");	
 }
 
 } else {
@@ -158,6 +157,5 @@ Por favor, preencha todos os campos:
 </body>
 </html>
 <?php
-}
 }
 ?>

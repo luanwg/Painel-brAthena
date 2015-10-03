@@ -38,14 +38,6 @@ $versao = $_POST['versao'];
 if ($ip != "" && $ssh_login != "" && $ssh_senha != "" && $login != "" && $senha_usuario != "" && $csenha_usuario != "" && $loginp != "" && $senha_usuariop != "" && $csenha_usuariop != "" && $email != ""  && $versao != "") {
 if ($senha_usuario == $csenha_usuario && $senha_usuariop == $csenha_usuariop) {
 
-/*$cont = file_get_contents("/etc/phpMyAdmin/config.inc.php");
-$txt1 = "= FALSE;       // default unless you're running a passwordless MySQL server";
-$txt2 = "= TRUE;        // default unless you're running a passwordless MySQL server";
-$escreve = str_replace($txt1, $txt2, $cont);
-$novo = fopen("/etc/phpMyAdmin/config.inc.php", "w");
-fwrite($novo, $escreve);
-fclose($novo);*/
-
 $sql = new MySQLi('localhost','root','');
 if ($sql->connect_errno) {
     die('Connect Error: ' . $sql->connect_errno);
@@ -60,16 +52,7 @@ $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Principal`.* TO '$login'@'localh
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '$login'@'localhost' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '$login'@'localhost' WITH GRANT OPTION");
 
-$sql_principal = file_get_contents("/home/emulador/sql/principal.sql");
-$sql->select_db("brAthena_Principal");
-$sql->query($sql_principal);
-$sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('$loginp', '$senha_usuariop', 'M', '$email', '99')");
-$sql_logs = file_get_contents("/home/emulador/sql/logs.sql");
-$sql->select_db("brAthena_Logs") ;
-$sql->query($sql_logs);
-if ($versao == "pre") { $sql_db = file_get_contents("/home/emulador/sql/pre-renovacao/pre-renovacao.sql"); } else { $sql_db = file_get_contents("/home/emulador/sql/renovacao/renovacao.sql"); }
-$sql->select_db("brAthena_DB");
-$sql->query($sql_logs);
+$sql->close();
 
 $confs = file_get_contents("/var/www/html/painel/confs.php");
 $txt1c = array('"SQLUSER", ""','"SQLPASS", ""','"SSHIP", ""','"SSHUSER", ""','"SSHPASS", ""');
@@ -79,15 +62,25 @@ $novoconfs = fopen("/var/www/html/painel/confs.php", "w");
 fwrite($novoconfs, $escreveconfs);
 fclose($novoconfs);
 
+include_once("../confs.php");
+
+$ssh->exec("mysql -u ".SQLUSER." -p".SQLPASS." brAthena_Principal < /home/emulador/sql/principal.sql");
+$ssh->exec("mysql -u ".SQLUSER." -p".SQLPASS." brAthena_Logs < /home/emulador/sql/logs.sql");
+if ($versao == "pre") { $vs = "pre-renovacao/pre-renovacao.sql"; } else { $vs = "renovacao/renovacao.sql"; }
+$ssh->exec("mysql -u ".SQLUSER." -p".SQLPASS." brAthena_Principal < /home/emulador/sql/".$vs."");
+
+$sql->select_db("brAthena_Principal");
+$sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('$loginp', '$senha_usuariop', 'M', '$email', '99')");
+
 $sql->query("USE mysql");
-$sql->query("DELETE FROM mysql.user WHERE User='' OR User='root'");
 $sql->query("DROP DATABASE IF EXISTS test");
 $sql->query("DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'");
+$sql->query("DELETE FROM mysql.user WHERE User='' OR User='root'");
 
-include_once("../confs.php");
-$ssh->exec("chmod 464 /var/www/html/painel/confs.php");
+if ($ssh->exec("chmod 644 /var/www/html/painel/confs.php")) {
+$configurado = "sim";	
+}
 
-echo '<script>alert("Configurações realizadas com sucesso!"); location.href="/painel";</script>';
 } else {
 echo "Senhas não coincidem!";	
 }
@@ -104,6 +97,14 @@ echo "Dados em branco!";
 </head>
 
 <body>
+<?php
+if ($configurado == "sim") {
+?>
+Configuração terminada com sucesso!<br>
+Volte para o painel de controle: <a href="/painel">Clique aqui</a>
+<?php
+} else {
+?>
 Por favor, preencha todos os campos:
 <form method="post" action="?a=configurar">
 <table>
@@ -158,3 +159,5 @@ Por favor, preencha todos os campos:
 </html>
 <?php
 }
+}
+?>

@@ -118,7 +118,7 @@ Por favor, preencha todos os campos:
 </tr>
 <tr>
 <td>Senha SSH:</td>
-<td><input type="text" name="ssh_senha"></td>
+<td><input type="password" name="ssh_senha"></td>
 </tr>
 <tr>
 <td>Crie um usuario (Mysql):</td>

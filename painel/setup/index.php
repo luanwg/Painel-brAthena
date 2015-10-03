@@ -53,36 +53,12 @@ if ($sql->connect_errno) {
 
 $sql->query("CREATE USER '$login'@'localhost' IDENTIFIED BY '$senha_usuario'");
 $sql->query("GRANT ALL PRIVILEGES ON * . * TO '$login'@'localhost' IDENTIFIED BY '$senha_usuario' WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0");
-$sql->query("CREATE DATABASE brAthena_Painel");
 $sql->query("CREATE DATABASE brAthena_Principal");
 $sql->query("CREATE DATABASE brAthena_Logs");
 $sql->query("CREATE DATABASE brAthena_DB");
-$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Painel`.* TO '$login'@'localhost' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Principal`.* TO '$login'@'localhost' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '$login'@'localhost' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '$login'@'localhost' WITH GRANT OPTION");
-
-$sql->select_db("brAthena_Painel");
-$sql->query("CREATE TABLE IF NOT EXISTS `usuarios` (
-  `id` int(2) NOT NULL,
-  `login` varchar(20) NOT NULL,
-  `senha` varchar(20) NOT NULL,
-  `email` varchar(50) NOT NULL,
-  `level` int(2) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id`);
-  ALTER TABLE `usuarios`
-  MODIFY `id` int(2) NOT NULL AUTO_INCREMENT;");
-$sql->query("CREATE TABLE IF NOT EXISTS `ssh` (
-  `ip` varchar(15) NOT NULL,
-  `login` varchar(20) NOT NULL,
-  `senha` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-ALTER TABLE `ssh`
-  ADD PRIMARY KEY (`ip`);");
-$sql->query("INSERT INTO `usuarios` (`login`, senha, email) VALUES ('$loginp', '$senha_usuariop', '$email')");
-$sql->query("INSERT INTO `ssh` (ip, `login`, senha) VALUES ('$ip', '$ssh_login', '$ssh_senha')");
 
 $sql_principal = file_get_contents("/home/emulador/sql/principal.sql");
 $sql->select_db("brAthena_Principal");
@@ -95,12 +71,19 @@ if ($versao == "pre") { $sql_db = file_get_contents("/home/emulador/sql/pre-reno
 $sql->select_db("brAthena_DB");
 $sql->query($sql_logs);
 
-$conf = fopen("/var/www/html/conf.php", "w");
-$php_conf = "<?php\n
-$sql = new MySQLi('localhost', '".$login."', '".$senha_usuario."');\n
-?>";
-fwrite($conf, $php_conf);
-fclose($conf);
+$confs = file_get_contents("/var/www/html/painel/confs.php");
+$txt1c = array('"SQLUSER", ""','"SQLPASS", ""','"SSHIP", ""','"SSHUSER", ""','"SSHPASS", ""');
+$txt2c = array('"SQLUSER", "$login"','"SQLPASS", "$senha_usuario"','"SSHIP", "$ip"','"SSHUSER", "$ssh_login"','"SSHPASS", "$ssh_senha"');
+$escreveconfs = str_replace($txt1c, $txt2c, $confs);
+$novoconfs = fopen("/var/www/html/painel/confs.php", "w");
+fwrite($novoconfs, $escreveconfs);
+fclose($novoconfs);
+
+$sql->query("USE mysql");
+$sql->query("DELETE FROM mysql.user WHERE User='' OR User='root'");
+//$sql->query("DELETE FROM mysql.user WHERE Host NOT IN ('localhost', '127.0.0.1', '::1')");
+$sql->query("DROP DATABASE IF EXISTS test");
+$sql->query("DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'");
 
 header('Location: /painel');
 } else {

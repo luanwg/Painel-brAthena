@@ -49,25 +49,19 @@ $comando[5] = "yum install -y mysql mysql-server mysql-devel";
 $comando[6] = "pear channel-discover phpseclib.sourceforge.net";
 $comando[7] = "pear install phpseclib/Net_SSH2";
 $comando[8] = "svn co https://github.com/brAthena/brAthena/trunk /home/emulador";
-$comando[9] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /etc/httpd/conf.d";
-$comando[10] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
-$comando[11] = "yum -y update";
-$comando[12] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure | chmod 760 /etc/phpMyAdmin/config.inc.php";
+$comando[9] = "rm -rf /etc/httpd/conf.d/phpMyAdmin.conf";
+$comando[10] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/phpMyAdmin /etc/httpd/conf.d";
+$comando[11] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
+$comando[12] = "yum -y update";
+$comando[13] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure | chmod 646 /etc/phpMyAdmin/config.inc.php | chmod 646 /var/www/html/painel/confs.php";
 if ($so == "centos6") {
-$comando[13] = "chkconfig httpd on | chkconfig mysqld on";
-$comando[14] = "service httpd start | service mysqld start";
+$comando[14] = "chkconfig httpd on | chkconfig mysqld on";
+$comando[15] = "service httpd start | service mysqld start";
 } elseif ($so == "centos7") {
-$comando[13] = "systemctl enable httpd.service | systemctl enable mariadb.service";
-$comando[14] = "systemctl start mariadb.service | systemctl start httpd.service";
+$comando[14] = "systemctl enable httpd.service | systemctl enable mariadb.service";
+$comando[15] = "systemctl start mariadb.service | systemctl start httpd.service";
 }
-$comando[15] = "mysql";
-$comando[16] = "USE mysql;";
-$comando[17] = "DELETE FROM mysql.user WHERE User='';";
-$comando[18] = "DELETE FROM mysql.user WHERE Host NOT IN ('localhost', '127.0.0.1', '::1');";
-$comando[19] = "DROP DATABASE IF EXISTS test;";
-$comando[20] = "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';";
-$comando[21] = "FLUSH PRIVILEGES;";
-$comando[22] = "exit";
+
 
 if (ob_get_level() == 0) ob_start(); 
 set_time_limit(1800);

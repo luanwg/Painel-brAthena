@@ -54,19 +54,21 @@ $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '$login'@'localhost' WI
 $sql->close();
 
 $confs = file_get_contents("/var/www/html/painel/confs.php");
-$txt1c = array('"SQLUSER", ""','"SQLPASS", ""','"SSHIP", ""','"SSHUSER", ""','"SSHPASS", ""');
-$txt2c = array('"SQLUSER", "'.$login.'"','"SQLPASS", "'.$senha_usuario.'"','"SSHIP", "'.$ip.'"','"SSHUSER", "'.$ssh_login.'"','"SSHPASS", "'.$ssh_senha.'"');
+$txt1c = array('"SQLUSER", ""','"SQLPASS", ""');
+$txt2c = array('"SQLUSER", "'.$login.'"','"SQLPASS", "'.$senha_usuario.'"');
 $escreveconfs = str_replace($txt1c, $txt2c, $confs);
 $novoconfs = fopen("/var/www/html/painel/confs.php", "w");
 fwrite($novoconfs, $escreveconfs);
 fclose($novoconfs);
 
 include_once("../confs.php");
+$ssh = new Net_SSH2($ip);
+$ssh->login($ssh_login,$ssh_senha);
 
-$ssh->exec("mysql -u ".SQLUSER." -p".SQLPASS." brAthena_Principal < /home/emulador/sql/principal.sql");
-$ssh->exec("mysql -u ".SQLUSER." -p".SQLPASS." brAthena_Logs < /home/emulador/sql/logs.sql");
+$ssh->exec("mysql -u ".$ssh_login." -p".$ssh_senha." brAthena_Principal < /home/emulador/sql/principal.sql");
+$ssh->exec("mysql -u ".$ssh_login." -p".$ssh_senha." brAthena_Logs < /home/emulador/sql/logs.sql");
 if ($versao == "pre") { $vs = "pre-renovacao/pre-renovacao.sql"; } else { $vs = "renovacao/renovacao.sql"; }
-$ssh->exec("mysql -u ".SQLUSER." -p".SQLPASS." brAthena_DB < /home/emulador/sql/".$vs."");
+$ssh->exec("mysql -u ".$ssh_login." -p".$ssh_senha." brAthena_DB < /home/emulador/sql/".$vs."");
 
 $sql->select_db("brAthena_Principal");
 $sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('$loginp', '$senha_usuariop', 'M', '$email', '99')");

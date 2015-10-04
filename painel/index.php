@@ -23,16 +23,26 @@
 
 $a = $_GET['a'];
 if ($a == "excluir-setup") { unlink("setup"); header('Location: /painel'); }
-include('Net/SSH2.php');
+require_once("confs.php");
 
 if ($a == "start") {
-$ssh->exec(""); 
+$ssh->exec("cd /home/emulador");
+$ssh->exec("exec ./login-server & > /var/www/html/painel/logs/login.txt"); 
+$ssh->exec("exec ./char-server & > /var/www/html/painel/logs/char.txt"); 
+$ssh->exec("exec ./map-server & > /var/www/html/painel/logs/map.txt"); 
 }
 
 if ($a == "stop") {
 shell_exec('sv stop');
 sleep(2);
 header('Location: index.php'); 
+}
+
+if ($a == "compilar") {
+$ssh->exec("cd /home/emulador");
+$ssh->exec("./configure");
+$ssh->exec("make clean >> /var/www/html/painel/logs/compilacao.txt");
+$ssh->exec("make sql >> /var/www/html/painel/logs/compilacao.txt");
 }
 ?>
 <!doctype html>
@@ -61,6 +71,6 @@ if(!$MapServer){ $Status[2] = "OFF";  } else { $Status[2] = "ON"; };
 Login: <?php echo "$Status[0]"; ?> - <a target="_blank" href="logs/index.php?log=login-server">Logs</a><br>
 Char: <?php echo "$Status[1]"; ?> - <a target="_blank" href="logs/index.php?log=char-server">Logs</a><br>
 Map: <?php echo "$Status[2]"; ?> - <a target="_blank" href="logs/index.php?log=map-server">Logs</a><br><br>
-Recompilação:  - <a target="_blank" href="logs/index.php?log=compilacao">Logs</a>
+Compilação:  - <a target="_blank" href="logs/index.php?log=compilacao">Logs</a>
 </body>
 </html>

@@ -26,23 +26,27 @@ if ($a == "excluir-setup") { unlink("setup"); header('Location: /painel'); }
 require_once("confs.php");
 
 if ($a == "start") {
-$ssh->exec("cd /home/emulador");
-$ssh->exec("exec ./login-server & > /var/www/html/painel/logs/login.txt"); 
-$ssh->exec("exec ./char-server & > /var/www/html/painel/logs/char.txt"); 
-$ssh->exec("exec ./map-server & > /var/www/html/painel/logs/map.txt"); 
+$ssh->exec("../home/emulador/login-server > /var/www/html/painel/logs/login.txt &"); 
+$ssh->exec("../home/emulador/char-server > /var/www/html/painel/logs/char.txt &"); 
+$ssh->exec("../home/emulador/map-server > /var/www/html/painel/logs/map.txt &"); 
 }
 
 if ($a == "stop") {
-shell_exec('sv stop');
+$ssh->exec("killall login-server | killall char-server | killall map-server");
+}
+
+if ($a == "restart") {
+$ssh->exec("killall login-server | killall char-server | killall map-server");
 sleep(2);
-header('Location: index.php'); 
+$ssh->exec("../home/emulador/login-server > /var/www/html/painel/logs/login.txt &"); 
+$ssh->exec("../home/emulador/char-server > /var/www/html/painel/logs/char.txt &"); 
+$ssh->exec("../home/emulador/map-server > /var/www/html/painel/logs/map.txt &"); 
 }
 
 if ($a == "compilar") {
-$ssh->exec("cd /home/emulador");
-$ssh->exec("./configure");
-$ssh->exec("make clean >> /var/www/html/painel/logs/compilacao.txt");
-$ssh->exec("make sql >> /var/www/html/painel/logs/compilacao.txt");
+$ssh->exec("../home/emulador/configure > /var/www/html/painel/logs/compilacao.txt");
+$ssh->exec("cd /home/emulador | make clean >> /var/www/html/painel/logs/compilacao.txt");
+$ssh->exec("cd /home/emulador | make sql >> /var/www/html/painel/logs/compilacao.txt");
 }
 ?>
 <!doctype html>

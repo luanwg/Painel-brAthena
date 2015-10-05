@@ -1,0 +1,36 @@
+#!/bin/bash
+case $1 in
+    'ligar')
+	clear
+	cd /home/emulador;
+    exec ./login-server > /var/www/html/painel/logs/login.txt &
+    exec ./char-server > /var/www/html/painel/logs/char.txt &
+    exec ./map-server > /var/www/html/painel/logs/map.txt &
+#	exec ./start-linux &
+;;
+    'desligar')
+	clear
+	echo -e "\033[1;33mPor favor aguarde, pode levar alguns minutos dependendo do emulador.\033[0m"
+    ps ax | grep -E "login-server|char-server|map-server" | awk '{print $1}' | xargs kill
+	echo -e "\033[1;33mEmulador desligado com sucesso.\033[0m"
+;;
+    'reiniciar')
+	clear
+	echo -e "\033[1;33mPor favor aguarde, pode levar alguns minutos dependendo do emulador.\033[0m"
+    ps ax | grep -E "login-server|char-server|map-server" | awk '{print $1}' | xargs kill
+	clear
+	echo -e "\033[1;33mEmulador desligado com sucesso.\033[0m"
+	cd /home/emulador
+    exec ./login-server &
+    exec ./char-server &
+    exec ./map-server &
+	echo -e "\033[1;33mEmulador ligado com sucesso.\033[0m"
+;;
+	'compilar')
+	clear
+	cd /home/emulador;
+	./configure > /var/www/html/painel/logs/compilar.txt
+	make clean >> /var/www/html/painel/logs/compilar.txt
+	make sql >> /var/www/html/painel/logs/compilar.txt
+;;
+esac

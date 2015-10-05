@@ -63,7 +63,7 @@ $comando[10] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/confs/php
 $comando[11] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/confs/sv /usr/bin";
 $comando[12] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
 $comando[13] = "yum -y update";
-$comando[14] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure | chmod 777 /usr/bin/sv | chmod 646 /var/www/html/painel/confs.php";
+$comando[14] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure | chmod 777 /usr/bin/sv | chmod 646 /var/www/html/painel/confs.php | chown -R apache /home/emulador/conf | chmod -R 744 /home/emulador/conf";
 if ($so == "centos6") {
 $comando[15] = "chkconfig httpd on | chkconfig mysqld on";
 $comando[16] = "service httpd start | service mysqld start";
@@ -117,7 +117,7 @@ if ($versao == "pre") { $vs = "pre-renovacao/pre-renovacao.sql"; } else { $vs = 
 $ssh->exec("mysql -u root -p".$senha_usuario." brAthena_DB < /home/emulador/sql/".$vs."");
 
 $sql->select_db("brAthena_Principal");
-$sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('$loginp', '$senha_usuariop', 'M', '$email', '99')");
+$sql->query("INSERT INTO `login` (userid, user_pass, sex, email, group_id) VALUES ('$loginp', '$senha_usuariop', 'M', '$email', '99')");
 
 $sql->query("USE mysql");
 $sql->query("DROP DATABASE IF EXISTS test");
@@ -157,12 +157,13 @@ if ($instalacao_completa == "sim") {
 <strong>Sua instalação está completa!!</strong><br>
 Acessar painel de controle:<br>
 <form method="post" action="http://<?php echo $ip; ?>/painel/setup/?a=configurar">
-<input type="hidden" name="ssh_login" value="<?php echo $sshlogin ?>">
-<input type="hidden" name="ssh_senha" value="<?php echo $sshsenha ?>">
-<input type="hidden" name="login" value="<?php echo $login ?>">
-<input type="hidden" name="senha_usuario" value="<?php echo $senha_usuario ?>">
-<input type="hidden" name="loginp" value="<?php echo $loginp ?>">
-<input type="hidden" name="senha_usuariop" value="<?php echo $senha_usuariop ?>">
+<input type="hidden" name="ip" value="<?php echo $ip; ?>">
+<input type="hidden" name="ssh_login" value="<?php echo $sshlogin; ?>">
+<input type="hidden" name="ssh_senha" value="<?php echo $sshsenha; ?>">
+<input type="hidden" name="login" value="<?php echo $login; ?>">
+<input type="hidden" name="senha_usuario" value="<?php echo $senha_usuario; ?>">
+<input type="hidden" name="loginp" value="<?php echo $loginp; ?>">
+<input type="hidden" name="senha_usuariop" value="<?php echo $senha_usuariop; ?>">
 <input type="submit" value="Clique Aqui">
 </form>
 <?php

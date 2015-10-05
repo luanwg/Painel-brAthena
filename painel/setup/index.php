@@ -40,11 +40,6 @@ $ssh = new Net_SSH2("localhost");
 if (!$ssh->login($ssh_login, $ssh_senha)) {
 	die('Não foi possível conectar ao servidor com o login/senha SSH fornecido!');
 }
-$sql->select_db("brAthena_Principal");
-$sql->query("SELECT userid, userpass FROM `login` WHERE userid='$loginp', userpass='$senha_usuariop'");
-if (!$sql->num_rows) {
-	die('Login/Senha fornecidos estão incorretos!');	
-}
 
 $confs = file_get_contents("/var/www/html/painel/confs.php");
 $txt1c = array('"SQLUSER", ""','"SQLPASS", ""', '"SSHUSER", ""', '"SSHPASS", ""');
@@ -55,6 +50,7 @@ fwrite($novoconfs, $escreveconfs);
 fclose($novoconfs);
 $ssh->exec("chmod 644 /var/www/html/painel/confs.php");
 
+;
 $usrid = substr(md5($login.time()),0,10);
 $passwd  = substr(md5($senha_usuario.time()),0,10);
 $conf1 = array('userid: s1', 'passwd: p1', '//login_ip: 127.0.0.1', '//char_ip: 127.0.0.1', '//map_ip: 127.0.0.1', 'sql.db_hostname: 127.0.0.1', 'sql.db_username: ragnarok', 'sql.db_password: ragnarok', 'sql.db_database: ragnarok', 'char_server_ip: 127.0.0.1', 'char_server_id: ragnarok', 'char_server_pw: ragnarok', 'char_server_db: ragnarok', 'map_server_ip: 127.0.0.1', 'map_server_id: ragnarok', 'map_server_pw: ragnarok', 'map_server_db: ragnarok', 'log_db_ip: 127.0.0.1', 'log_db_id: ragnarok', 'log_db_pw: ragnarok', 'log_db_db: log', 'log_login_db: loginlog', 'brAdb_ip: 127.0.0.1', 'brAdb_id: ragnarok', 'brAdb_pw: ragnarok', 'brAdb_name: bra_db');
@@ -93,7 +89,7 @@ echo "Dados em branco!";
 if ($configurado == "sim") {
 ?>
 Configuração terminada com sucesso!<br>
-Volte para o painel de controle: <a href="/painel">Clique aqui</a>
+Volte para o painel de controle: <a href="/painel/?a=excluir-setup">Clique aqui</a>
 <?php
 }
 ?>

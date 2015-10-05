@@ -27,7 +27,7 @@
 // \____________________________________________________________/
 $a = $_GET['a'];
 if ($a == "instalacao") {
-$ip = htmlspecialchars($_POST['ip']);
+$ip = $_POST['ip'];
 $sshlogin = $_POST['sshlogin'];
 $sshsenha = $_POST['sshsenha'];
 $so = $_POST['so'];
@@ -71,6 +71,9 @@ $comando[16] = "service httpd start | service mysqld start";
 $comando[15] = "systemctl enable httpd.service | systemctl enable mariadb.service";
 $comando[16] = "systemctl start mariadb.service | systemctl start httpd.service";
 }
+$comando[17] = "/usr/bin/mysqladmin -u root password '$senha_usuario'";
+$comando[18] = "mysql -u root -p".$senha_usuario." -e \"CREATE USER 'brAthena'@'".$_SERVER['SERVER_ADDR']."' IDENTIFIED BY '$senha_usuario'\"";
+$comando[19] = "mysql -u root -p".$senha_usuario." -e \"GRANT ALL PRIVILEGES ON * . * TO 'brAthena'@'".$_SERVER['SERVER_ADDR']."' IDENTIFIED BY '$senha_usuario' WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0\"";
 
 
 if (ob_get_level() == 0) ob_start(); 
@@ -87,8 +90,7 @@ echo '</div>';
 
 
 
-
-$sql = new MySQLi('$ip','root','');
+$sql = new MySQLi($ip,'brAthena',$senha_usuario);
 if ($sql->connect_errno) {
     die('Connect Error: ' . $sql->connect_errno);
 }
@@ -109,21 +111,10 @@ $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Principal`.* TO '$login'@'$ip' W
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '$login'@'$ip' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '$login'@'$ip' WITH GRANT OPTION");
 
-/*
-$confs = file_get_contents("/var/www/html/painel/confs.php");
-$txt1c = array('"SQLUSER", ""','"SQLPASS", ""', '"SSHUSER", ""', '"SSHPASS", ""');
-$txt2c = array('"SQLUSER", "'.$login.'"','"SQLPASS", "'.$senha_usuario.'"', '"SSHUSER", "'.$ssh_login.'"', '"SSHPASS", "'.$ssh_senha.'"');
-$escreveconfs = str_replace($txt1c, $txt2c, $confs);
-$novoconfs = fopen("/var/www/html/painel/confs.php", "w");
-fwrite($novoconfs, $escreveconfs);
-fclose($novoconfs);
-
-include_once("../confs.php");
-*/
-$ssh->exec("mysql -u ".$ssh_login." -p".$ssh_senha." brAthena_Principal < /home/emulador/sql/principal.sql");
-$ssh->exec("mysql -u ".$ssh_login." -p".$ssh_senha." brAthena_Logs < /home/emulador/sql/logs.sql");
+$ssh->exec("mysql -u root -p".$senha_usuario." brAthena_Principal < /home/emulador/sql/principal.sql");
+$ssh->exec("mysql -u root -p".$senha_usuario." brAthena_Logs < /home/emulador/sql/logs.sql");
 if ($versao == "pre") { $vs = "pre-renovacao/pre-renovacao.sql"; } else { $vs = "renovacao/renovacao.sql"; }
-$ssh->exec("mysql -u ".$ssh_login." -p".$ssh_senha." brAthena_DB < /home/emulador/sql/".$vs."");
+$ssh->exec("mysql -u root -p".$senha_usuario." brAthena_DB < /home/emulador/sql/".$vs."");
 
 $sql->select_db("brAthena_Principal");
 $sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES ('$loginp', '$senha_usuariop', 'M', '$email', '99')");
@@ -131,34 +122,10 @@ $sql->query("INSERT INTO `login` (userid, userpass, sex, email, group_id) VALUES
 $sql->query("USE mysql");
 $sql->query("DROP DATABASE IF EXISTS test");
 $sql->query("DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'");
-$sql->query("DELETE FROM mysql.user WHERE User='' OR (User='root' AND Host!='localhost')");
-$sql->query("UPDATE mysql.user SET Password=PASSWORD('$senha_usuario') WHERE User='root' AND Host='localhost'");
+$sql->query("DELETE FROM mysql.user WHERE User='' OR User='brAthena' OR (User='root' AND Host!='localhost')");
 
-$ssh->exec("chmod -R 646 /home/conf");
-/*
-$usrid = substr(md5($login.time()),0,10);
-$passwd  = substr(md5($senha_usuario.time()),0,10);
-$conf1 = array('userid: s1', 'passwd: p1', '//login_ip: 127.0.0.1', '//char_ip: 127.0.0.1', '//map_ip: 127.0.0.1', 'sql.db_hostname: 127.0.0.1', 'sql.db_username: ragnarok', 'sql.db_password: ragnarok', 'sql.db_database: ragnarok', 'char_server_ip: 127.0.0.1', 'char_server_id: ragnarok', 'char_server_pw: ragnarok', 'char_server_db: ragnarok', 'map_server_ip: 127.0.0.1', 'map_server_id: ragnarok', 'map_server_pw: ragnarok', 'map_server_db: ragnarok', 'log_db_ip: 127.0.0.1', 'log_db_id: ragnarok', 'log_db_pw: ragnarok', 'log_db_db: log', 'log_login_db: loginlog', 'brAdb_ip: 127.0.0.1', 'brAdb_id: ragnarok', 'brAdb_pw: ragnarok', 'brAdb_name: bra_db');
-$conf2 = array('userid: $usrid', 'passwd: $passwd', '//login_ip: $ip', '//char_ip: $ip', '//map_ip: $ip', 'sql.db_hostname: $ip', 'sql.db_username: $login', 'sql.db_password: $senha_usuario', 'sql.db_database: brAthena_Principal', 'char_server_ip: $ip', 'char_server_id: $login', 'char_server_pw: $senha_usuario', 'char_server_db: brAthena_Principal', 'map_server_ip: $ip', 'map_server_id: $login', 'map_server_pw: $senha_usuario', 'map_server_db: brAthena_Principal', 'log_db_ip: $ip', 'log_db_id: $login', 'log_db_pw: $senha_usuario', 'log_db_db: brAthena_Logs', 'log_login_db: brAthena_Logs', 'brAdb_ip: $ip', 'brAdb_id: $login', 'brAdb_pw: $senha_usuario', 'brAdb_name: brAthena_DB');
-$char = file_get_contents("/home/emulador/conf/char-server.conf");
-$escrevechar = str_replace($conf1, $conf2, $char);
-$inter = file_get_contents("/home/emulador/conf/inter-server.conf");
-$escreveinter = str_replace($conf1, $conf2, $inter);
-$map = file_get_contents("/home/emulador/conf/map-server.conf");
-$escrevemap = str_replace($conf1, $conf2, $map);
-$novochar = fopen("/home/emulador/conf/char-server.conf", "w");
-fwrite($novochar, $escrevechar);
-fclose($novochar);
-$novointer = fopen("/home/emulador/conf/inter-server.conf", "w");
-fwrite($novointer, $escreveinter);
-fclose($novointer);
-$novomap = fopen("/home/emulador/conf/map-server.conf", "w");
-fwrite($novomap, $escrevemap);
-fclose($novomap);
-
-*/
-
-
+$ssh->exec("chmod 646 -R /home/emulador/conf");
+$instalacao_completa = "sim";
 
 
 } else {
@@ -188,7 +155,16 @@ if ($instalacao_completa == "sim") {
 ?>
 <br><br>
 <strong>Sua instalação está completa!!</strong><br>
-Acessar painel de controle: <a href="http://<?php echo $ip; ?>/painel/setup">Clique aqui</a>
+Acessar painel de controle:<br>
+<form method="post" action="http://<?php echo $ip; ?>/painel/setup/?a=configurar">
+<input type="hidden" name="ssh_login" value="<?php echo $sshlogin ?>">
+<input type="hidden" name="ssh_senha" value="<?php echo $sshsenha ?>">
+<input type="hidden" name="login" value="<?php echo $login ?>">
+<input type="hidden" name="senha_usuario" value="<?php echo $senha_usuario ?>">
+<input type="hidden" name="loginp" value="<?php echo $loginp ?>">
+<input type="hidden" name="senha_usuariop" value="<?php echo $senha_usuariop ?>">
+<input type="submit" value="Clique Aqui">
+</form>
 <?php
 } else {
 ?>

@@ -1,4 +1,5 @@
 ﻿<?php
+define("IP", "");
 define("HOST", "localhost");
 define("SQLUSER", "");
 define("SQLPASS", "");

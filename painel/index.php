@@ -39,6 +39,10 @@ $ssh->exec("sv restart");
 if ($a == "compilar") {
 $ssh->exec("sv compilar > /var/www/html/painel/logs/compilacao.txt");
 }
+if ($a == "atualizar") {
+$ssh->exec("svn update /home/emulador > /var/www/html/painel/logs/atualizacao.txt");
+$ssh->exec("svn update /var/www/html/painel >> /var/www/html/painel/logs/atualizacao.txt");
+}
 ?>
 <!doctype html>
 <html>
@@ -66,6 +70,7 @@ if(!$MapServer){ $Status[2] = "OFF";  } else { $Status[2] = "ON"; };
 Login: <?php echo "$Status[0]"; ?> - <a target="_blank" href="logs/index.php?log=login-server">Logs</a><br>
 Char: <?php echo "$Status[1]"; ?> - <a target="_blank" href="logs/index.php?log=char-server">Logs</a><br>
 Map: <?php echo "$Status[2]"; ?> - <a target="_blank" href="logs/index.php?log=map-server">Logs</a><br><br>
-Compilação:  - <a target="_blank" href="logs/index.php?log=compilacao">Logs</a>
+Compilação:  - <a target="_blank" href="logs/index.php?log=compilacao">Logs</a><br>
+Atualização:  - <a target="_blank" href="logs/index.php?log=atualizacao">Logs</a>
 </body>
 </html>

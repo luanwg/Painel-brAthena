@@ -41,8 +41,8 @@ if (!$ssh->login($ssh_login, $ssh_senha)) {
 	die('Não foi possível conectar ao servidor com o login/senha SSH fornecido!');
 }
 $confs = file_get_contents("/var/www/html/painel/confs.php");
-$txt1c = array('"SQLUSER", ""','"SQLPASS", ""', '"SSHUSER", ""', '"SSHPASS", ""');
-$txt2c = array('"SQLUSER", "'.$login.'"','"SQLPASS", "'.$senha_usuario.'"', '"SSHUSER", "'.$ssh_login.'"', '"SSHPASS", "'.$ssh_senha.'"');
+$txt1c = array('"IP", ""', '"SQLUSER", ""','"SQLPASS", ""', '"SSHUSER", ""', '"SSHPASS", ""');
+$txt2c = array('"IP", "'.$ip.'"', '"SQLUSER", "'.$login.'"','"SQLPASS", "'.$senha_usuario.'"', '"SSHUSER", "'.$ssh_login.'"', '"SSHPASS", "'.$ssh_senha.'"');
 $escreveconfs = str_replace($txt1c, $txt2c, $confs);
 $novoconfs = fopen("/var/www/html/painel/confs.php", "w");
 fwrite($novoconfs, $escreveconfs);
@@ -51,23 +51,35 @@ $ssh->exec("chmod 644 /var/www/html/painel/confs.php");
 
 $usrid = substr(md5($login.time()),0,10);
 $passwd  = substr(md5($senha_usuario.time()),0,10);
+
 $sql->select_db("brAthena_Principal");
 $sql->query("UPDATE `login` SET `userid`='".$usrid."', `user_pass`='".$passwd."' WHERE `account_id`='1'");
-$conf1 = array('userid: s1', 'passwd: p1', '//login_ip: 127.0.0.1', '//char_ip: 127.0.0.1', '//map_ip: 127.0.0.1', 'sql.db_hostname: 127.0.0.1', 'sql.db_username: ragnarok', 'sql.db_password: ragnarok', 'sql.db_database: ragnarok', 'char_server_ip: 127.0.0.1', 'char_server_id: ragnarok', 'char_server_pw: ragnarok', 'char_server_db: ragnarok', 'map_server_ip: 127.0.0.1', 'map_server_id: ragnarok', 'map_server_pw: ragnarok', 'map_server_db: ragnarok', 'log_db_ip: 127.0.0.1', 'log_db_id: ragnarok', 'log_db_pw: ragnarok', 'log_db_db: log', 'brAdb_ip: 127.0.0.1', 'brAdb_id: ragnarok', 'brAdb_pw: ragnarok', 'brAdb_name: bra_db');
-$conf2 = array('userid: '.$usrid.'', 'passwd: '.$passwd.'', 'login_ip: '.$ip.'', 'char_ip: '.$ip.'', 'map_ip: '.$ip.'', 'sql.db_hostname: '.$ip.'', 'sql.db_username: '.$login.'', 'sql.db_password: '.$senha_usuario.'', 'sql.db_database: brAthena_Principal', 'char_server_ip: '.$ip.'', 'char_server_id: '.$login.'', 'char_server_pw: '.$senha_usuario.'', 'char_server_db: brAthena_Principal', 'map_server_ip: '.$ip.'', 'map_server_id: '.$login.'', 'map_server_pw: '.$senha_usuario.'', 'map_server_db: brAthena_Principal', 'log_db_ip: '.$ip.'', 'log_db_id: '.$login.'', 'log_db_pw: '.$senha_usuario.'', 'log_db_db: brAthena_Logs', 'brAdb_ip: '.$ip.'', 'brAdb_id: '.$login.'', 'brAdb_pw: '.$senha_usuario.'', 'brAdb_name: brAthena_DB');
-$char = file_get_contents("/home/emulador/conf/char-server.conf");
-$escrevechar = str_replace($conf1, $conf2, $char);
-$inter = file_get_contents("/home/emulador/conf/inter-server.conf");
-$escreveinter = str_replace($conf1, $conf2, $inter);
-$map = file_get_contents("/home/emulador/conf/map-server.conf");
-$escrevemap = str_replace($conf1, $conf2, $map);
-$novochar = fopen("/home/emulador/conf/char-server.conf", "w");
+
+$sql->select_db("brAthena_Confs");
+$sql->query("INSERT INTO `import` (config,valor,desc,ref) VALUES ('userid: ','".$usrid."','Configuração das senhas de comunicação do banco de dados.','map-server.conf'),('passwd: ','".$passwd."','Configuração das senhas de comunicação do banco de dados.','map-server.conf'),('char_ip: ','".$ip."','IP do Servidor de Personagens (char-server).','map-server.conf'),('map_ip: ','".$ip."','IP do Servidor de Mapas (map-server).','map-server.conf'),('sql.db_hostname: ','".$ip."','Banco de dados de informações do servidor de login.','inter-server.conf'),('sql.db_username: ','".$login."','Banco de dados de informações do servidor de login.','inter-server.conf'),('sql.db_password: ','".$senha_usuario."','Banco de dados de informações do servidor de login.','inter-server.conf'),('sql.db_database: ','brAthena_Principal','Banco de dados de informações do servidor de login.','inter-server.conf'),('char_server_ip: ','".$ip."','Banco de dados de informações do servidor de personagens.','inter-server.conf'),('char_server_id: ','".$login."','Banco de dados de informações do servidor de personagens.','inter-server.conf'),('char_server_pw: ','".$senha_usuario."','Banco de dados de informações do servidor de personagens.','inter-server.conf'),('char_server_db: ','brAthena_Principal','Banco de dados de informações do servidor de personagens.','inter-server.conf'),('map_server_ip: ','".$ip."','Banco de dados de informações do servidor de mapas.','inter-server.conf'),('map_server_id: ','".$login."','Banco de dados de informações do servidor de mapas.','inter-server.conf'),('map_server_pw: ','".$senha_usuario."','Banco de dados de informações do servidor de mapas.','inter-server.conf'),('map_server_db: ','brAthena_Principal','Banco de dados de informações do servidor de mapas.','inter-server.conf'),('log_db_ip: ','".$ip."','Banco de dados de logs.','inter-server.conf'),('log_db_id: ','".$login."','Banco de dados de logs.','inter-server.conf'),('log_db_pw: ','".$senha_usuario."','Banco de dados de logs.','inter-server.conf'),('log_db_db: ','brAthena_Logs','Banco de dados de logs.','inter-server.conf'),('brAdb_ip: ','".$ip."','Banco de dados de itens, habilidades, monstros e etc.','inter-server.conf'),('brAdb_id: ','".$login."','Banco de dados de itens, habilidades, monstros e etc.','inter-server.conf'),('brAdb_pw: ','".$senha_usuario."','Banco de dados de itens, habilidades, monstros e etc.','inter-server.conf'),('brAdb_name: ','brAthena_DB','Banco de dados de itens, habilidades, monstros e etc.','inter-server.conf'),('userid: ','".$usrid."','Configuração das senhas de comunicação com o banco de dados.','char-server.conf'),('passwd: ','".$passwd."','Configuração das senhas de comunicação com o banco de dados.','char-server.conf'),('login_ip: ','".$ip."','IP de login do servidor.','char-server.conf'),('char_ip: ','".$ip."','IP do servidor de personagens (char-server).','char-server.conf')");
+
+
+$sql->query("SELECT `config`, `valor` FROM `import` WHERE `ref`='char-server.conf'");
+while($char = $sql->fetch_array) {
+$escrevechar .= $char[config].$char[valor].PHP_EOL;
+}
+$sql->query("SELECT `config`, `valor` FROM `import` WHERE `ref`='inter-server.conf'");
+while($inter = $sql->fetch_array) {
+$escreveinter .= $inter[config].$inter[valor].PHP_EOL;
+}
+$sql->query("SELECT `config`, `valor` FROM `import` WHERE `ref`='map-server.conf'");
+while($map = $sql->fetch_array) {
+$escrevemap .= $map[config].$map[valor].PHP_EOL;
+}
+
+//chown -R apache /home/emulador/conf/import | chmod -R 744 /home/emulador/conf/import
+$novochar = fopen("/home/emulador/conf/import/char_conf.txt", "w");
 fwrite($novochar, $escrevechar);
 fclose($novochar);
-$novointer = fopen("/home/emulador/conf/inter-server.conf", "w");
+$novointer = fopen("/home/emulador/conf/import/inter_conf.txt", "w");
 fwrite($novointer, $escreveinter);
 fclose($novointer);
-$novomap = fopen("/home/emulador/conf/map-server.conf", "w");
+$novomap = fopen("/home/emulador/conf/import/map_conf.txt", "w");
 fwrite($novomap, $escrevemap);
 fclose($novomap);
 $configurado = "sim";

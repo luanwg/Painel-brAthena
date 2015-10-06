@@ -63,7 +63,7 @@ $comando[10] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/confs/php
 $comando[11] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/confs/sv /usr/bin";
 $comando[12] = "svn co https://github.com/luanwg/Painel-brAthena/trunk/painel /var/www/html/painel";
 $comando[13] = "yum -y update";
-$comando[14] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure | chmod 777 /usr/bin/sv | chmod 646 /var/www/html/painel/confs.php | chown -R apache /home/emulador/conf | chmod -R 744 /home/emulador/conf";
+$comando[14] = "chmod +x /home/emulador/sysinfogen.sh | chmod 777 /home/emulador/configure | chmod 777 /usr/bin/sv | chmod 646 /var/www/html/painel/confs.php";
 if ($so == "centos6") {
 $comando[15] = "chkconfig httpd on | chkconfig mysqld on";
 $comando[16] = "service httpd start | service mysqld start";
@@ -104,9 +104,11 @@ $sql->query("GRANT ALL PRIVILEGES ON * . * TO '$login'@'$ip' IDENTIFIED BY '$sen
 $sql->query("CREATE DATABASE brAthena_Principal");
 $sql->query("CREATE DATABASE brAthena_Logs");
 $sql->query("CREATE DATABASE brAthena_DB");
+$sql->query("CREATE DATABASE brAthena_Confs");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Principal`.* TO '$login'@'localhost' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '$login'@'localhost' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '$login'@'localhost' WITH GRANT OPTION");
+$sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Confs`.* TO '$login'@'localhost' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Principal`.* TO '$login'@'$ip' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_Logs`.* TO '$login'@'$ip' WITH GRANT OPTION");
 $sql->query("GRANT ALL PRIVILEGES ON `brAthena\_DB`.* TO '$login'@'$ip' WITH GRANT OPTION");
@@ -118,6 +120,8 @@ $ssh->exec("mysql -u root -p".$senha_usuario." brAthena_DB < /home/emulador/sql/
 
 $sql->select_db("brAthena_Principal");
 $sql->query("INSERT INTO `login` (userid, user_pass, sex, email, group_id) VALUES ('$loginp', '$senha_usuariop', 'M', '$email', '99')");
+$sql->select_db("brAthena_Confs");
+$sql->query("CREATE TABLE IF NOT EXISTS `import` (`id` int(11) NOT NULL AUTO_INCREMENT,`config` varchar(50) NOT NULL,`valor` varchar(50) NOT NULL,`desc` text NOT NULL,`ref` varchar(50) NOT NULL,PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
 
 $sql->query("USE mysql");
 $sql->query("DROP DATABASE IF EXISTS test");
